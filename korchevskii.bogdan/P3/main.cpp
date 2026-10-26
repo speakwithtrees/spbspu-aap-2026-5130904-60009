@@ -21,38 +21,38 @@ namespace korchevskii {
     return false;
   }
 
-  bool pathsAreEqual(const char* firstPath, const char* secondPath)
+  bool pathsAreEqual(const char* first_path, const char* second_path)
   {
-    while ((*firstPath != '\0') && (*firstPath == *secondPath)) {
-      ++firstPath;
-      ++secondPath;
+    while ((*first_path != '\0') && (*first_path == *second_path)) {
+      ++first_path;
+      ++second_path;
     }
-    return *firstPath == *secondPath;
+    return *first_path == *second_path;
   }
 
-  bool readDimensions(std::istream& input, std::size_t& rows, std::size_t& columns, std::size_t& elementCount)
+  bool readDimensions(std::istream& input, std::size_t& rows, std::size_t& columns, std::size_t& element_count)
   {
-    long long inputRows = 0;
-    long long inputColumns = 0;
-    if (!(input >> inputRows >> inputColumns)) {
+    long long input_rows = 0;
+    long long input_columns = 0;
+    if (!(input >> input_rows >> input_columns)) {
       return false;
     }
-    if ((inputRows < 0) || (inputColumns < 0)) {
+    if ((input_rows < 0) || (input_columns < 0)) {
       return false;
     }
-    if ((static_cast< unsigned long long >(inputRows) > std::numeric_limits< std::size_t >::max())
-        || (static_cast< unsigned long long >(inputColumns) > std::numeric_limits< std::size_t >::max())) {
+    if ((static_cast< unsigned long long >(input_rows) > std::numeric_limits< std::size_t >::max())
+        || (static_cast< unsigned long long >(input_columns) > std::numeric_limits< std::size_t >::max())) {
       return false;
     }
-    rows = static_cast< std::size_t >(inputRows);
-    columns = static_cast< std::size_t >(inputColumns);
+    rows = static_cast< std::size_t >(input_rows);
+    columns = static_cast< std::size_t >(input_columns);
     if ((rows == 0) != (columns == 0)) {
       return false;
     }
     if ((columns != 0) && (rows > (std::numeric_limits< std::size_t >::max() / columns))) {
       return false;
     }
-    elementCount = rows * columns;
+    element_count = rows * columns;
     return true;
   }
 
@@ -78,21 +78,21 @@ namespace korchevskii {
     for (std::size_t row = 1; row < (rows - 1); ++row) {
       for (std::size_t column = 1; column < (columns - 1); ++column) {
         const int value = values[row][column];
-        bool isLocalMaximum = true;
-        for (int rowOffset = -1; rowOffset <= 1; ++rowOffset) {
-          for (int columnOffset = -1; columnOffset <= 1; ++columnOffset) {
-            if ((rowOffset == 0) && (columnOffset == 0)) {
+        bool is_local_maximum = true;
+        for (int row_offset = -1; row_offset <= 1; ++row_offset) {
+          for (int column_offset = -1; column_offset <= 1; ++column_offset) {
+            if ((row_offset == 0) && (column_offset == 0)) {
               continue;
             }
-            const std::size_t neighborRow = static_cast< std::size_t >(static_cast< long long >(row) + rowOffset);
+            const std::size_t neighborRow = static_cast< std::size_t >(static_cast< long long >(row) + row_offset);
             const std::size_t neighborColumn
-                = static_cast< std::size_t >(static_cast< long long >(column) + columnOffset);
+                = static_cast< std::size_t >(static_cast< long long >(column) + column_offset);
             if (value <= values[neighborRow][neighborColumn]) {
-              isLocalMaximum = false;
+              is_local_maximum = false;
             }
           }
         }
-        if (isLocalMaximum) {
+        if (is_local_maximum) {
           ++count;
         }
       }
@@ -102,12 +102,12 @@ namespace korchevskii {
 
   long long minSumOnMainDiagonals(const int* const* values, std::size_t rows, std::size_t columns)
   {
-    bool hasDiagonal = false;
-    long long minSum = 0;
-    for (std::size_t startColumn = 0; startColumn < columns; ++startColumn) {
+    bool has_diagonal = false;
+    long long min_sum = 0;
+    for (std::size_t start_column = 0; start_column < columns; ++start_column) {
       long long sum = 0;
       std::size_t row = 0;
-      std::size_t column = startColumn;
+      std::size_t column = start_column;
       while (row < rows) {
         sum += values[row][column];
         ++row;
@@ -116,14 +116,14 @@ namespace korchevskii {
         }
         --column;
       }
-      if ((!hasDiagonal) || (sum < minSum)) {
-        minSum = sum;
-        hasDiagonal = true;
+      if ((!has_diagonal) || (sum < min_sum)) {
+        min_sum = sum;
+        has_diagonal = true;
       }
     }
-    for (std::size_t startRow = 1; startRow < rows; ++startRow) {
+    for (std::size_t start_row = 1; start_row < rows; ++start_row) {
       long long sum = 0;
-      std::size_t row = startRow;
+      std::size_t row = start_row;
       std::size_t column = columns - 1;
       while (row < rows) {
         sum += values[row][column];
@@ -133,12 +133,12 @@ namespace korchevskii {
         }
         --column;
       }
-      if ((!hasDiagonal) || (sum < minSum)) {
-        minSum = sum;
-        hasDiagonal = true;
+      if ((!has_diagonal) || (sum < min_sum)) {
+        min_sum = sum;
+        has_diagonal = true;
       }
     }
-    return hasDiagonal ? minSum : 0;
+    return has_diagonal ? min_sum : 0;
   }
 
   bool processMatrix(std::istream& input, std::ostream& output, std::size_t rows, std::size_t columns, int** values)
@@ -157,19 +157,19 @@ namespace korchevskii {
     return true;
   }
 
-  int** allocateMatrix(std::size_t rows, std::size_t columns, std::size_t elementCount)
+  int** allocateMatrix(std::size_t rows, std::size_t columns, std::size_t element_count)
   {
-    if (elementCount == 0) {
+    if (element_count == 0) {
       return nullptr;
     }
     const std::size_t maxSize = std::numeric_limits< std::size_t >::max();
-    if ((rows > (maxSize / sizeof(int*))) || (elementCount > (maxSize / sizeof(int)))) {
+    if ((rows > (maxSize / sizeof(int*))) || (element_count > (maxSize / sizeof(int)))) {
       return nullptr;
     }
     int* elements = nullptr;
     int** matrix = nullptr;
     try {
-      elements = new int[elementCount];
+      elements = new int[element_count];
       matrix = new int*[rows];
     } catch (...) {
       delete[] matrix;
@@ -194,12 +194,12 @@ namespace korchevskii {
   {
     std::size_t rows = 0;
     std::size_t columns = 0;
-    std::size_t elementCount = 0;
-    if (!readDimensions(input, rows, columns, elementCount)) {
+    std::size_t element_count = 0;
+    if (!readDimensions(input, rows, columns, element_count)) {
       std::cerr << "Error: the input file does not contain valid dimensions.\n";
       return false;
     }
-    if ((mode == fixedArrayMode) && (elementCount > static_cast< std::size_t >(maxFixedElements))) {
+    if ((mode == fixedArrayMode) && (element_count > static_cast< std::size_t >(maxFixedElements))) {
       std::cerr << "Error: a fixed array can contain at most 10000 elements.\n";
       return false;
     }
@@ -211,8 +211,8 @@ namespace korchevskii {
       }
       return processMatrix(input, output, rows, columns, matrix);
     }
-    int** matrix = allocateMatrix(rows, columns, elementCount);
-    if ((elementCount != 0) && (matrix == nullptr)) {
+    int** const matrix = allocateMatrix(rows, columns, element_count);
+    if ((element_count != 0) && (matrix == nullptr)) {
       std::cerr << "Error: not enough memory to store the matrix.\n";
       return false;
     }
@@ -228,24 +228,24 @@ int main(int argc, char* argv[])
     std::cerr << "Error: expected a mode, an input file, and an output file.\n";
     return 1;
   }
-  const char* modeText = argv[1];
-  const char* inputPath = argv[2];
-  const char* outputPath = argv[3];
-  if (korchevskii::pathsAreEqual(inputPath, outputPath)) {
+  const char* const mode_text = argv[1];
+  const char* const input_path = argv[2];
+  const char* const output_path = argv[3];
+  if (korchevskii::pathsAreEqual(input_path, output_path)) {
     std::cerr << "Error: input and output files must have different paths.\n";
     return 1;
   }
   int mode = 0;
-  if (!korchevskii::parseMode(modeText, mode)) {
+  if (!korchevskii::parseMode(mode_text, mode)) {
     std::cerr << "Error: mode must be 1 (fixed array) or 2 (dynamic array).\n";
     return 1;
   }
-  std::ifstream input{inputPath};
+  std::ifstream input{input_path};
   if (!input) {
     std::cerr << "Error: cannot open the input file.\n";
     return 1;
   }
-  std::ofstream output{outputPath};
+  std::ofstream output{output_path};
   if (!output) {
     std::cerr << "Error: cannot open the output file.\n";
     return 1;
