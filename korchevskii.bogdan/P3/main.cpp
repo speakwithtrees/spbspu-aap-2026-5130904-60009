@@ -30,8 +30,7 @@ namespace korchevskii {
     return *firstPath == *secondPath;
   }
 
-  bool readDimensions(std::istream& input, std::size_t& rows, std::size_t& columns,
-      std::size_t& elementCount)
+  bool readDimensions(std::istream& input, std::size_t& rows, std::size_t& columns, std::size_t& elementCount)
   {
     long long inputRows = 0;
     long long inputColumns = 0;
@@ -41,27 +40,23 @@ namespace korchevskii {
     if ((inputRows < 0) || (inputColumns < 0)) {
       return false;
     }
-    if ((static_cast<unsigned long long>(inputRows) >
-        std::numeric_limits<std::size_t>::max()) ||
-        (static_cast<unsigned long long>(inputColumns) >
-        std::numeric_limits<std::size_t>::max())) {
+    if ((static_cast< unsigned long long >(inputRows) > std::numeric_limits< std::size_t >::max())
+        || (static_cast< unsigned long long >(inputColumns) > std::numeric_limits< std::size_t >::max())) {
       return false;
     }
-    rows = static_cast<std::size_t>(inputRows);
-    columns = static_cast<std::size_t>(inputColumns);
+    rows = static_cast< std::size_t >(inputRows);
+    columns = static_cast< std::size_t >(inputColumns);
     if ((rows == 0) != (columns == 0)) {
       return false;
     }
-    if ((columns != 0) &&
-        (rows > (std::numeric_limits<std::size_t>::max() / columns))) {
+    if ((columns != 0) && (rows > (std::numeric_limits< std::size_t >::max() / columns))) {
       return false;
     }
     elementCount = rows * columns;
     return true;
   }
 
-  bool readElements(std::istream& input, std::size_t rows, std::size_t columns,
-      int** matrix)
+  bool readElements(std::istream& input, std::size_t rows, std::size_t columns, int** matrix)
   {
     for (std::size_t row = 0; row < rows; ++row) {
       for (std::size_t column = 0; column < columns; ++column) {
@@ -74,8 +69,7 @@ namespace korchevskii {
     return input.eof() && !input.bad();
   }
 
-  std::size_t countLocalMax(const int* const* values, std::size_t rows,
-      std::size_t columns)
+  std::size_t countLocalMax(const int* const* values, std::size_t rows, std::size_t columns)
   {
     std::size_t count = 0;
     if ((rows < 3) || (columns < 3)) {
@@ -90,10 +84,9 @@ namespace korchevskii {
             if ((rowOffset == 0) && (columnOffset == 0)) {
               continue;
             }
-            const std::size_t neighborRow = static_cast<std::size_t>(
-                static_cast<long long>(row) + rowOffset);
-            const std::size_t neighborColumn = static_cast<std::size_t>(
-                static_cast<long long>(column) + columnOffset);
+            const std::size_t neighborRow = static_cast< std::size_t >(static_cast< long long >(row) + rowOffset);
+            const std::size_t neighborColumn
+                = static_cast< std::size_t >(static_cast< long long >(column) + columnOffset);
             if (value <= values[neighborRow][neighborColumn]) {
               isLocalMaximum = false;
             }
@@ -107,8 +100,7 @@ namespace korchevskii {
     return count;
   }
 
-  long long minSumOnMainDiagonals(const int* const* values, std::size_t rows,
-      std::size_t columns)
+  long long minSumOnMainDiagonals(const int* const* values, std::size_t rows, std::size_t columns)
   {
     bool hasDiagonal = false;
     long long minSum = 0;
@@ -149,8 +141,7 @@ namespace korchevskii {
     return hasDiagonal ? minSum : 0;
   }
 
-  bool processMatrix(std::istream& input, std::ostream& output, std::size_t rows,
-      std::size_t columns, int** values)
+  bool processMatrix(std::istream& input, std::ostream& output, std::size_t rows, std::size_t columns, int** values)
   {
     if (!readElements(input, rows, columns, values)) {
       std::cerr << "Error: the input file does not contain a valid matrix.\n";
@@ -166,15 +157,13 @@ namespace korchevskii {
     return true;
   }
 
-  int** allocateMatrix(std::size_t rows, std::size_t columns,
-      std::size_t elementCount)
+  int** allocateMatrix(std::size_t rows, std::size_t columns, std::size_t elementCount)
   {
     if (elementCount == 0) {
       return nullptr;
     }
-    const std::size_t maxSize = std::numeric_limits<std::size_t>::max();
-    if ((rows > (maxSize / sizeof(int*))) ||
-        (elementCount > (maxSize / sizeof(int)))) {
+    const std::size_t maxSize = std::numeric_limits< std::size_t >::max();
+    if ((rows > (maxSize / sizeof(int*))) || (elementCount > (maxSize / sizeof(int)))) {
       return nullptr;
     }
     int* elements = nullptr;
@@ -210,8 +199,7 @@ namespace korchevskii {
       std::cerr << "Error: the input file does not contain valid dimensions.\n";
       return false;
     }
-    if ((mode == fixedArrayMode) &&
-        (elementCount > static_cast<std::size_t>(maxFixedElements))) {
+    if ((mode == fixedArrayMode) && (elementCount > static_cast< std::size_t >(maxFixedElements))) {
       std::cerr << "Error: a fixed array can contain at most 10000 elements.\n";
       return false;
     }
